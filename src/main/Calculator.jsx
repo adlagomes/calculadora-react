@@ -19,23 +19,49 @@ export default class Calculator extends Component {
   }
 
   setOperation(operation) {
-    if (this.state.current === 0) {
+    if (this.state.current === 0) { 
       this.setState({ operation, current: 1, clearDisplay: true });
     } else {
       const result = operation === "=";
       const currentOperation = this.state.operation;
 
       const values = [...this.state.values];
-      values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}`);
-      values[1] = 0
+      switch (currentOperation) {
+        case "/":
+          values[0] = values[0] / values[1];
+          values[1] = 0;
+          if (isNaN(values[0]) || !isFinite(values[0])) {
+            this.clearMemory();
+            return;
+          }
+          break;
+        case "*":
+          values[0] = values[0] * values[1];
+          values[1] = 0;
+          break;
+        case "-":
+          values[0] = values[0] - values[1];
+          values[1] = 0;
+          break;
+        case "+":
+          values[0] = values[0] + values[1];
+          values[1] = 0;
+          break;
+        default:
+          break;
+      }
+
+      // ESSE CÓDIGO FOI REFATORADO PARA O SWITCH ACIMA, VISTO QUE O USO DO EVAL() É MAL VISTO! //
+      // values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}`);                     //
+      // values[1] = 0                                                                          //
 
       this.setState({
-        displayValue: values[0],
+        displayValue: values[0].toString(), // toString para que retorne uma string pro dislpayValue, ao invés de retornar um Number. Isso evita o erro do "." depois do "=".
         operation: result ? null : operation,
         current: result ? 0 : 1,
         clearDisplay: !result,
-        values
-      })
+        values,
+      });
     }
   }
 
